@@ -1,11 +1,16 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+# 用于“纲”分类的网络。
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
+        # 进行2维的卷积(输入3个通道、输出3个通道、卷积核大小是3*3)
         self.conv1 = nn.Conv2d(3, 3, 3)
+        # 进行max-pooling 窗口大小是2
         self.maxpool1 = nn.MaxPool2d(kernel_size=2)
+        # 整流,小于0的设为0
         self.relu1 = nn.ReLU(inplace=True)
 
         self.conv2 = nn.Conv2d(3, 6, 3)
@@ -14,7 +19,7 @@ class Net(nn.Module):
 
         self.fc1 = nn.Linear(6 * 123 * 123, 150)
         self.relu3 = nn.ReLU(inplace=True)
-
+        # 随机将整个通道归零（通道是2D特征图，
         self.drop = nn.Dropout2d()
 
         self.fc2 = nn.Linear(150, 2)

@@ -1,7 +1,8 @@
 import pandas as pd
 import os
 from PIL import Image
-
+# 生成“种”分类的训练与测试数据标签。预测是兔子、老鼠还是鸡。
+# 并存入Species_train_annotation.csv/Species_val_annotation.csv
 ROOTS = '../Dataset/'
 PHASE = ['train', 'val']
 SPECIES = ['rabbits', 'rats', 'chickens']  # [0,1,2]
@@ -11,7 +12,7 @@ DATA_info = {'train': {'path': [], 'species': []},
              }
 for p in PHASE:
     for s in SPECIES:
-        DATA_DIR = ROOTS + p + '\\' + s
+        DATA_DIR = ROOTS + p + '/' + s
         DATA_NAME = os.listdir(DATA_DIR)
 
         for item in DATA_NAME:

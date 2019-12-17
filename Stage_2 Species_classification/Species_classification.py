@@ -1,4 +1,5 @@
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 import torch
@@ -18,7 +19,7 @@ TRAIN_ANNO = 'Species_train_annotation.csv'
 VAL_ANNO = 'Species_val_annotation.csv'
 CLASSES = ['Mammals', 'Birds']
 SPECIES = ['rabbits', 'rats', 'chickens']
-
+# 程序主体，用来进行模型训练/验证，并调用训练好的模型进行预测。
 class MyDataset():
 
     def __init__(self, root_dir, annotations_file, transform=None):

@@ -1,4 +1,5 @@
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import matplotlib.pyplot as plt
 from torch.utils.data import  DataLoader
 import torch
@@ -17,7 +18,7 @@ VAL_DIR = 'val/'
 TRAIN_ANNO = 'Classes_train_annotation.csv'
 VAL_ANNO = 'Classes_val_annotation.csv'
 CLASSES = ['Mammals', 'Birds']
-
+# 程序主体，用来进行模型训练/验证，并调用训练好的模型进行预测。
 class MyDataset():
 
     def __init__(self, root_dir, annotations_file, transform=None):
@@ -48,6 +49,7 @@ class MyDataset():
             sample['image'] = self.transform(image)
         return sample
 
+# 把多个步骤整合到一起 （[把给定的图片转换为指定的size，以默认0.5的概率水平翻转给定的PIL图像，转换PIL图像为tensor(H*W*C)]）
 train_transforms = transforms.Compose([transforms.Resize((500, 500)),
                                        transforms.RandomHorizontalFlip(),
                                        transforms.ToTensor(),
@@ -60,10 +62,10 @@ train_dataset = MyDataset(root_dir= ROOT_DIR + TRAIN_DIR,
                           annotations_file= TRAIN_ANNO,
                           transform=train_transforms)
 
-test_dataset = MyDataset(root_dir= ROOT_DIR + VAL_DIR,
-                         annotations_file= VAL_ANNO,
-                         transform=val_transforms)
-
+test_dataset = MyDataset(root_dir= ROOT_DIR + VAL_DIR,  # 文件路径
+                         annotations_file= VAL_ANNO,  # 文件名
+                         transform=val_transforms)  # 预处理的流程
+# 加载训练数据集（训练数据集、分批，每批的大小,shuffle是否进行洗牌）
 train_loader = DataLoader(dataset=train_dataset, batch_size=128, shuffle=True)
 test_loader = DataLoader(dataset=test_dataset)
 data_loaders = {'train': train_loader, 'val': test_loader}
@@ -71,6 +73,7 @@ data_loaders = {'train': train_loader, 'val': test_loader}
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
 
+# 可视化训练数据集
 def visualize_dataset():
     print(len(train_dataset))
     idx = random.randint(0, len(train_dataset))
@@ -81,8 +84,10 @@ def visualize_dataset():
     plt.show()
 visualize_dataset()
 
+# 训练模型
 def train_model(model, criterion, optimizer, scheduler, num_epochs=50):
     Loss_list = {'train': [], 'val': []}
+    # 准确性
     Accuracy_list_classes = {'train': [], 'val': []}
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -141,6 +146,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=50):
                 print('Best val classes Acc: {:.2%}'.format(best_acc))
 
     model.load_state_dict(best_model_wts)
+    # 保存模型
     torch.save(model.state_dict(), 'best_model.pt')
     print('Best val classes Acc: {:.2%}'.format(best_acc))
     return model, Loss_list,Accuracy_list_classes

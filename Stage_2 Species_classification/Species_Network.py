@@ -2,7 +2,7 @@ import torch.nn as nn
 import torchvision
 import torch.nn.functional as F
 
-
+# 用于“种”分类的网络。
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
